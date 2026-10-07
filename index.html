@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tareas">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<title>Tareas</title>
+<style>
+:root{--bg:#f2f2f7;--card:#fff;--text:#000;--sub:#8e8e93;--line:rgba(60,60,67,.18);--blue:#007aff;--green:#34c759;--red:#ff3b30;--orange:#ff9500;--fill:rgba(120,120,128,.12);--blur:rgba(242,242,247,.8);
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000;--card:#1c1c1e;--text:#fff;--line:rgba(84,84,88,.6);--fill:rgba(120,120,128,.24);--blur:rgba(0,0,0,.8);--blue:#0a84ff;--green:#30d158;--red:#ff453a;--orange:#ff9f0a}}
+:root[data-theme="dark"]{--bg:#000;--card:#1c1c1e;--text:#fff;--line:rgba(84,84,88,.6);--fill:rgba(120,120,128,.24);--blur:rgba(0,0,0,.8);--blue:#0a84ff;--green:#30d158;--red:#ff453a;--orange:#ff9f0a}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer}
+main{max-width:520px;margin:0 auto;padding:0 16px 60px}
+.nav{display:flex;justify-content:space-between;align-items:flex-end;padding:14px 4px 6px}
+h1{font-size:34px;font-weight:700;letter-spacing:.2px;margin:0}
+.plus{width:34px;height:34px;border-radius:50%;background:var(--blue);color:#fff;font-size:26px;line-height:1;margin-bottom:4px;transition:transform .15s}
+.plus:active{transform:scale(.9)}
+.card{background:var(--card);border-radius:12px;overflow:hidden}
+.hero{display:flex;align-items:center;gap:18px;padding:18px;margin:10px 0 14px}
+.ring{position:relative;width:88px;height:88px;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:9;stroke-linecap:round}
+.ring .bg{stroke:var(--fill)}.ring .fg{stroke:var(--green);transition:stroke-dashoffset .5s ease}
+.ring b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:21px;font-weight:700}
+.hero h2{margin:0;font-size:20px}.hero p{margin:4px 0 0;color:var(--sub);font-size:15px}
+.chips{display:flex;gap:8px;overflow-x:auto;margin:0 -16px 14px;padding:0 16px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;background:var(--card);border-radius:18px;padding:7px 15px;font-size:15px;font-weight:500;transition:.2s}
+.chip.on{background:var(--blue);color:#fff}
+.alert{background:var(--orange);color:#fff;border-radius:12px;padding:12px 14px;margin-top:10px;font-size:15px;font-weight:600;display:flex;justify-content:space-between;gap:10px}
+ul{list-style:none;margin:0;padding:0}
+li{position:relative;overflow:hidden;background:var(--red)}
+li+li .row{border-top:.5px solid var(--line)}
+.row{position:relative;z-index:1;display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--card);touch-action:pan-y}
+.rm{position:absolute;right:0;top:0;bottom:0;width:90px;color:#fff;font-size:16px;font-weight:500}
+.tx{flex:1;min-width:0}
+.t{font-size:17px;word-break:break-word}
+li.done .t{color:var(--sub);text-decoration:line-through}
+.sm{font-size:13px;color:var(--sub);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
+.over{color:var(--red);font-weight:600}.soon{color:var(--orange);font-weight:600}
+.chk{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--sub);flex:none;color:#fff;font-size:14px;font-weight:700;transition:.2s}
+li.done .chk{background:var(--green);border-color:var(--green)}
+.empty{color:var(--sub);text-align:center;padding:28px;background:var(--card)}
+.foot{margin-top:14px}
+.foot button{display:block;width:100%;text-align:left;padding:13px 16px;font-size:17px;color:var(--blue);background:var(--card)}
+.foot button+button{border-top:.5px solid var(--line)}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .3s;z-index:10}
+.sheet{position:fixed;left:0;right:0;bottom:0;max-width:520px;margin:0 auto;background:var(--bg);border-radius:14px 14px 0 0;transform:translateY(105%);transition:transform .35s cubic-bezier(.2,.8,.2,1);z-index:11;padding:0 16px calc(20px + env(safe-area-inset-bottom,0px))}
+.open .scrim{opacity:1;pointer-events:auto}.open .sheet{transform:none}
+.bar{display:flex;justify-content:space-between;align-items:center;padding:16px 4px 14px;font-size:17px}
+.bar b{font-weight:600}.bar .c{color:var(--blue)}.bar .a{color:var(--blue);font-weight:600}
+.sheet input,.sheet select{font:inherit;font-size:17px;color:var(--text);background:none;border:0;outline:0;min-width:0}
+.sheet .title{width:100%;padding:13px 16px;background:var(--card)}
+.sheet .g{margin-top:14px}
+.f{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 16px;min-height:46px;background:var(--card)}
+.f+.f{border-top:.5px solid var(--line)}
+.f select,.f input{text-align:right;color:var(--blue)}
+</style>
+</head>
+<body>
+<main>
+  <div class="nav"><h1>Tareas</h1><button class="plus" id="plus" aria-label="Nueva tarea">+</button></div>
+  <div id="alerts"></div>
+  <div class="card hero">
+    <div class="ring"><svg width="88" height="88"><circle class="bg" cx="44" cy="44" r="38"/><circle class="fg" id="fg" cx="44" cy="44" r="38" stroke-dasharray="238.76" stroke-dashoffset="238.76"/></svg><b id="pct">0%</b></div>
+    <div><h2 id="hl">Tu progreso</h2><p id="meta">Sin tareas</p></div>
+  </div>
+  <div class="chips" id="chips"></div>
+  <div class="card"><ul id="list"></ul></div>
+  <div class="card foot"><button id="clr">Borrar completadas</button><button id="notif">Activar avisos del sistema</button></div>
+</main>
+
+<div id="root">
+  <div class="scrim" id="scrim"></div>
+  <form class="sheet" id="f">
+    <div class="bar"><button type="button" class="c" id="cancel">Cancelar</button><b>Nueva tarea</b><button type="submit" class="a">Añadir</button></div>
+    <input class="title card" id="in" placeholder="Título" autocomplete="off" enterkeyhint="done">
+    <div class="card g">
+      <div class="f"><span>Categoría</span><select id="cat"></select></div>
+      <div class="f"><span>Fecha límite</span><input type="datetime-local" id="due"></div>
+      <div class="f"><span>Recordatorio</span><select id="rem"><option value="">Ninguno</option><option value="0">Al vencer</option><option value="60">1 hora antes</option><option value="1440">1 día antes</option></select></div>
+    </div>
+  </form>
+</div>
+<script>
+var KEY="tareas-v1",CATS=["Personal","Trabajo","Estudio","Casa","Otra"],tasks=[],filter="Todas";
+try{tasks=JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){tasks=[]}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(tasks))}catch(e){}}
+var $=function(i){return document.getElementById(i)};
+CATS.forEach(function(c){var o=document.createElement("option");o.textContent=c;$("cat").appendChild(o)});
+function fmt(s){return new Date(s).toLocaleString("es",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}
+function openSheet(o){$("root").className=o?"open":"";if(o)setTimeout(function(){$("in").focus()},350)}
+function del(t){tasks=tasks.filter(function(k){return k!==t});save();render()}
+function swipe(row,t){
+  var sx=0,dx=0;
+  row.addEventListener("touchstart",function(e){sx=e.touches[0].clientX;dx=0;row.style.transition="none"},{passive:true});
+  row.addEventListener("touchmove",function(e){dx=Math.min(0,e.touches[0].clientX-sx);row.style.transform="translateX("+dx+"px)"},{passive:true});
+  row.addEventListener("touchend",function(){
+    row.style.transition="transform .25s";
+    if(dx<-170)del(t);else row.style.transform=dx<-45?"translateX(-90px)":"translateX(0)";
+  });
+}
+function render(){
+  $("chips").innerHTML="";
+  ["Todas"].concat(CATS).forEach(function(c){
+    var b=document.createElement("button");b.className="chip"+(c===filter?" on":"");b.textContent=c;
+    b.onclick=function(){filter=c;render()};$("chips").appendChild(b);
+  });
+  var vis=tasks.filter(function(t){return filter==="Todas"||(t.c||"Personal")===filter});
+  vis.sort(function(a,b){
+    if(a.d!==b.d)return a.d?1:-1;
+    if(a.due&&b.due)return a.due<b.due?-1:1;
+    return a.due?-1:b.due?1:0;
+  });
+  var l=$("list");l.innerHTML="";
+  if(!vis.length)l.innerHTML='<div class="empty">Sin tareas</div>';
+  var now=Date.now();
+  vis.forEach(function(t){
+    var li=document.createElement("li");if(t.d)li.className="done";
+    var rm=document.createElement("button");rm.className="rm";rm.textContent="Eliminar";rm.onclick=function(){del(t)};
+    var row=document.createElement("div");row.className="row";
+    var c=document.createElement("button");c.className="chk";c.textContent=t.d?"✓":"";
+    c.onclick=function(){t.d=!t.d;save();render()};
+    var box=document.createElement("div");box.className="tx";
+    var s=document.createElement("div");s.className="t";s.textContent=t.x;
+    var m=document.createElement("div");m.className="sm";
+    var tag=document.createElement("span");tag.textContent=t.c||"Personal";m.appendChild(tag);
+    if(t.due){
+      var ms=new Date(t.due).getTime()-now,d=document.createElement("span");
+      d.textContent=fmt(t.due)+(t.r!==""&&t.r!=null?" 🔔":"");
+      if(!t.d&&ms<0)d.className="over";else if(!t.d&&ms<864e5)d.className="soon";
+      m.appendChild(d);
+    }
+    box.append(s,m);row.append(c,box);li.append(rm,row);l.appendChild(li);swipe(row,t);
+  });
+  var n=vis.length,dn=vis.filter(function(t){return t.d}).length,p=n?Math.round(dn/n*100):0;
+  $("pct").textContent=p+"%";
+  $("fg").style.strokeDashoffset=238.76*(1-p/100);
+  $("hl").textContent=filter==="Todas"?"Tu progreso":filter;
+  $("meta").textContent=n?dn+" de "+n+" completadas":"Sin tareas";
+}
+$("plus").onclick=function(){openSheet(true)};
+$("cancel").onclick=$("scrim").onclick=function(){openSheet(false)};
+$("f").onsubmit=function(e){
+  e.preventDefault();var v=$("in").value.trim();if(!v)return;
+  var due=$("due").value,r=$("rem").value;
+  tasks.push({x:v,d:false,c:$("cat").value,due:due||"",r:due?r:"",n:false});
+  $("in").value="";$("due").value="";$("rem").value="";save();openSheet(false);render();check();
+};
+$("clr").onclick=function(){tasks=tasks.filter(function(t){return !t.d});save();render()};
+$("notif").onclick=function(){
+  if(!("Notification" in window)){alert("Tu navegador no admite avisos del sistema. Se usarán avisos dentro de la app.");return}
+  Notification.requestPermission().then(function(p){$("notif").textContent=p==="granted"?"Avisos activados":"Avisos bloqueados"});
+};
+function check(){
+  var now=Date.now(),ch=false;
+  tasks.forEach(function(t){
+    if(t.d||t.n||!t.due||t.r===""||t.r==null)return;
+    if(new Date(t.due).getTime()-Number(t.r)*6e4<=now){
+      t.n=true;ch=true;
+      var a=document.createElement("div");a.className="alert";
+      a.innerHTML="<span></span><span>✕</span>";
+      a.firstChild.textContent="⏰ "+t.x+" — "+fmt(t.due);
+      a.onclick=function(){a.remove()};$("alerts").appendChild(a);
+      try{if("Notification" in window&&Notification.permission==="granted")new Notification("⏰ "+t.x,{body:"Vence: "+fmt(t.due)})}catch(e){}
+    }
+  });
+  if(ch){save();render()}
+}
+try{ // icono para la pantalla de inicio
+  var cv=document.createElement("canvas");cv.width=cv.height=180;var x=cv.getContext("2d");
+  x.fillStyle="#34c759";x.fillRect(0,0,180,180);x.strokeStyle="#fff";x.lineWidth=18;x.lineCap=x.lineJoin="round";
+  x.beginPath();x.moveTo(50,95);x.lineTo(80,125);x.lineTo(132,60);x.stroke();
+  var ln=document.createElement("link");ln.rel="apple-touch-icon";ln.href=cv.toDataURL("image/png");document.head.appendChild(ln);
+}catch(e){}
+render();check();setInterval(check,30000);
+</script>
+</body>
+</html>
